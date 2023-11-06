@@ -42,7 +42,7 @@ const Footer = ({ onShowProductDetails }) => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.footerItem}>
-        <Text style={styles.footerEmoji}>🛒</Text>
+      <Image source={require('../assets/carritopokemon.jpg')} style={styles.footerImage} />
         <Text style={styles.footerText}>Carrito</Text>
       </TouchableOpacity>
 
