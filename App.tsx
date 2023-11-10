@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,14 +7,19 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomeSplash from './Screens/WelcomeSplash';
 import SignUpScreen from './Screens/SignUpScreen';
 import HomeSplash from './Screens/HomeSplash';
 import PokemonDetailsPage from './Screens/PokemonDetailsPage';
 import ProductListScreen from './Screens/ProductListScreen';
+import ProductListDetail from './Screens/ProductListDetail';
+import PokeCart from './Screens/PokeCart';
+import {CartProvider} from './Navigator/CartContext'
 import Footer from './Screens/Footer';
 
 const Stack = createStackNavigator();
@@ -24,16 +29,42 @@ type RootStackParamList = {
   WelcomeScreen: undefined;
   SignUp: undefined;
 };
+
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+
 function LoginScreen({ navigation }: { navigation: LoginScreenNavigationProp }) {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
 
+  useEffect(() => {
+    const loadSavedData = async () => {
+      const savedEmail = await AsyncStorage.getItem('email');
+      const savedPassword = await AsyncStorage.getItem('password');
+      console.log('Saved Email:', savedEmail);
+      console.log('Saved Password:', savedPassword);
+    };
+  
+    loadSavedData();
+  }, []);
+
+  const handleLogin = async () => {
+    const { email, password } = form;
+
+    const savedEmail = await AsyncStorage.getItem('email');
+    const savedPassword = await AsyncStorage.getItem('password');
+
+    if (email === savedEmail && password === savedPassword) {
+      navigation.navigate('WelcomeScreen');
+    } else {
+      alert('Correo o contraseña incorrectos');
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Image
             alt=""
@@ -53,13 +84,13 @@ function LoginScreen({ navigation }: { navigation: LoginScreenNavigationProp }) 
 
         <View style={styles.form}>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Correo Electronico</Text>
+            <Text style={styles.inputLabel}>Correo Electrónico</Text>
 
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
-              onChangeText={email => setForm({ ...form, email })}
+              onChangeText={(email) => setForm({ ...form, email })}
               placeholder="angel@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
@@ -71,7 +102,7 @@ function LoginScreen({ navigation }: { navigation: LoginScreenNavigationProp }) 
 
             <TextInput
               autoCorrect={false}
-              onChangeText={password => setForm({ ...form, password })}
+              onChangeText={(password) => setForm({ ...form, password })}
               placeholder="********"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
@@ -80,28 +111,27 @@ function LoginScreen({ navigation }: { navigation: LoginScreenNavigationProp }) 
             />
           </View>
           <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('WelcomeScreen')}>
+            <TouchableOpacity onPress={handleLogin}>
               <View style={styles.btn}>
                 <Text style={styles.btnText}>Iniciar Sesión</Text>
               </View>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SignUp')}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
             <Text style={styles.formFooter}>
-              No tienes una cuenta? {' '}
-              <Text style={{ textDecorationLine: 'underline' }}>Registrate</Text>
+              No tienes una cuenta?{' '}
+              <Text style={{ textDecorationLine: 'underline' }}>Regístrate</Text>
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 export default function App() {
   return (
+    <CartProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
@@ -109,9 +139,12 @@ export default function App() {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="HomeSplash" component={HomeSplash} />
         <Stack.Screen name="PokemonDetails" component={PokemonDetailsPage} />
+        <Stack.Screen name="ProductDetails" component={ProductListDetail} />
+        <Stack.Screen name="PokeCart" component={PokeCart} />
         <Stack.Screen name="Home" component={ProductListScreen} options={{ title: 'Lista de Productos' }} />
       </Stack.Navigator>
     </NavigationContainer>
+    </CartProvider>
   );
 }
 
@@ -196,4 +229,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-

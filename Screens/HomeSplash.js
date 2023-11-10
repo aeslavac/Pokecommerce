@@ -193,6 +193,9 @@ export default function HomeSplash() {
               Selecciona uno para obtener detalles
             </Text>
           </View>
+          <Text style={styles.contentSubtitleSteel}>
+              Pokemon Tipo Acero
+          </Text>
           <Carousel
             data={pokemonList}
             renderItem={renderPokemonItem}
@@ -200,6 +203,10 @@ export default function HomeSplash() {
             itemWidth={200}
             firstItem={1}
           />
+          <Text style={styles.contentSubtitleGhost}>
+              Pokemon Tipo Fantasma
+          </Text>
+
           <Carousel
             data={ghostPokemonList}
             renderItem={renderGhostPokemonItem}
@@ -207,6 +214,10 @@ export default function HomeSplash() {
             itemWidth={200}
             firstItem={1}
           />
+          <Text style={styles.contentSubtitleDragon}>
+              Pokemon Tipo Dragon
+          </Text>
+
           <Carousel
             data={dragonPokemonList}
             renderItem={renderDragonPokemonItem}
@@ -263,4 +274,37 @@ const styles = StyleSheet.create({
     color: '#707070',
     textAlign: 'center', 
   },
+  contentSubtitleSteel:{
+    fontSize: 20,
+    fontFamily:'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    textDecorationColor: '#B8B8D0',
+    color:'#B8B8D0',
+    textShadowColor: '#F8D030',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5, 
+  },
+  contentSubtitleGhost:{
+    fontSize: 20,
+    fontFamily:'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    textDecorationColor:'#705898',
+    color:'#705898',
+    textShadowColor: '#705898', 
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 5, 
+  },
+  contentSubtitleDragon:{
+    fontSize: 20,
+    fontFamily:'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    textDecorationColor:'#7038F8',
+    color:'#7038F8',
+    textShadowColor: 'rgba(255, 0, 0, 0.75)', 
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
+  }
 });

@@ -1,3 +1,4 @@
+// ProductListScreen.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -9,9 +10,9 @@ import {
   Image,
   Button,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Footer from './Footer';
 
 const ProductListScreen = () => {
   const [searchText, setSearchText] = useState('');
@@ -19,6 +20,33 @@ const ProductListScreen = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loadedCount, setLoadedCount] = useState(15);
   const [isSearching, setIsSearching] = useState(false);
+
+  const navigation = useNavigation();
+
+  const handlePokemonDetails = async (pokemon) => {
+    if (pokemon.types && pokemon.description) {
+      navigation.navigate('ProductDetails', { data: { searchedPokemon: pokemon } });
+    } else {
+      try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
+        const pokemonData = response.data;
+  
+        const speciesResponse = await axios.get(pokemonData.species.url);
+        const speciesData = speciesResponse.data;
+        const description = speciesData.flavor_text_entries.find(entry => entry.language.name === 'es').flavor_text;
+  
+        const updatedPokemon = {
+          ...pokemon,
+          types: pokemonData.types.map(type => type.type.name),
+          description: description,
+        };
+  
+        navigation.navigate('ProductDetails', { data: { searchedPokemon: updatedPokemon } });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   const route = useRoute();
   const selectedType = route.params?.selectedType;
@@ -93,7 +121,10 @@ const ProductListScreen = () => {
   }, [selectedType, loadedCount, isSearching]);
 
   const renderProductItem = ({ item }) => (
-    <TouchableOpacity style={styles.productItem}>
+    <TouchableOpacity
+      style={styles.productItem}
+      onPress={() => handlePokemonDetails(item)}
+    >
       <Image
         source={{ uri: item.image }}
         style={{ width: 80, height: 80 }}
@@ -120,6 +151,7 @@ const ProductListScreen = () => {
         renderItem={renderProductItem}
       />
       <Button title="Cargar Más" onPress={loadMore} />
+      <Footer/>
     </View>
   );
 };
